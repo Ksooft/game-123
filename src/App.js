@@ -36,6 +36,7 @@ function App() {
         document.querySelector('.header-game img').classList.remove('es')
         document.querySelector('.header-game span').classList.remove('right')
         let newExample = generateExample()
+        console.log(newExample);
         const cleanExample1 = newExample.slice(0, newExample.length - 2)
         const cleanExample2 = example.slice(0, example.length - 2)
         if (cleanExample1 === cleanExample2 || cleanExample1.split('').reverse().join('') === cleanExample2 ) {
@@ -53,7 +54,7 @@ function App() {
 
         const timeInterval = setInterval(() => {
           let timePassed = Date.now() - startTime.current;
-          if (timePassed >= 4200) {
+          if (timePassed >= 3700) {
             console.log('не успел')
             endGame()
           }
@@ -74,7 +75,7 @@ function App() {
         }, 10);
         idInterval.current = timerPercent
         setIsClick(false)
-      }, 1600);
+      }, 800);
     } else if (num !== answer && !isClick) {
       endGame()
     }
@@ -208,7 +209,7 @@ function App() {
   return (
     <>
       <Navbar score={score} isStarted={isStarted} />
-      <div className="w-100 bg-info d-flex justify-content-center align-items-center" style={{ height: "calc(100vh - 50px)", userSelect: "none" }}>
+      <div className="w-100 bg-info d-flex justify-content-center align-items-center" style={{ height: "calc(100vh - 50px)", userSelect: "none"}}>
           <div className="container">
               <div className="header-game text-center">
                 <img src={calc} alt="calculate" style={{ width: "20vw" }} draggable="false" />

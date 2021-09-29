@@ -1,6 +1,14 @@
+body {
+  overflow-y: hidden;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.header-game img {
+  margin-bottom: 15px;
 }
 
 .header-game span.right {
@@ -8,11 +16,11 @@ code {
 }
 
 .header-game img.es {
-  animation: calculateRight 1.5s ease-in-out;
+  animation: calculateRight .7s ease;
 }
 
 .header-game img.wrong {
-  animation: calculateWrong 1.5s ease-in-out;
+  animation: calculateWrong .7s ease;
 }
 
 .answer {
@@ -38,7 +46,7 @@ code {
 }
 
 .answer-bar.animate {
-  animation: progressBar 4000ms linear forwards;
+  animation: progressBar 3500ms linear forwards;
 }
 
 .answer-text {
@@ -58,6 +66,7 @@ code {
   display: flex;
   position: fixed;
   width: 100vw;
+  height: 100vh;
   top: 50px;
   right: 0;
   left: 0;
@@ -84,15 +93,15 @@ code {
 
 @keyframes calculateRight {
   0% {transform: translateY(0px);}
-  30% {transform: translateY(30px);}
-  70% {transform: translateY(-20px);}
+  30% {transform: translateY(20px);}
+  70% {transform: translateY(-15px);}
   100% {transform: translateY(0px);}
 }
 
 @keyframes calculateWrong {
   0% {transform: translateX(0px);}
-  30% {transform: translateX(30px);}
-  70% {transform: translateX(-20px);}
+  30% {transform: translateX(20px);}
+  70% {transform: translateX(-15px);}
   100% {transform: translateX(0px);}
 }
 
@@ -119,13 +128,14 @@ code {
 
 @media (max-width: 450px) {
   .header-game img {
-    width: 210px !important;
+    width: 190px !important;
   }
   .header-game .text-white {
     font-size: 3.3rem !important;
   }
-  .answer:not(:last-child()) {
+  .answer {
     margin-bottom: 15px;
+    font-size: 1.7rem;
   }
 }
 
