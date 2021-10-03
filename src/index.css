@@ -1,5 +1,5 @@
 body {
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 code {
@@ -16,11 +16,20 @@ code {
 }
 
 .header-game img.es {
-  animation: calculateRight .7s ease;
+  animation: calculateRight .5s ease;
 }
 
 .header-game img.wrong {
-  animation: calculateWrong .7s ease;
+  animation: calculateWrong .5s ease;
+}
+
+.header-example {
+  font-size: 5.5vw;
+  font-weight: 500;
+}
+
+.header-example.swipe {
+  animation: swipeExample .7s linear;
 }
 
 .answer {
@@ -43,6 +52,7 @@ code {
   background-color: #290661;
   color: transparent;
   width: 100%;
+  transition: width .2s linear;
 }
 
 .answer-bar.animate {
@@ -103,6 +113,12 @@ code {
   30% {transform: translateX(20px);}
   70% {transform: translateX(-15px);}
   100% {transform: translateX(0px);}
+}
+
+@keyframes swipeExample {
+  0%,100% {transform: translateX(0);}
+  50% {transform: translateX(-150vw);}
+  50.000001% {transform: translateX(100vw);}
 }
 
 @media (max-width: 899px) {
