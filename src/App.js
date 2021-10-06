@@ -1,35 +1,31 @@
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Navbar from './components/Navbar';
 import calc from './assets/img/calculate.png'
 import Answer from './components/Answer';
 import StartGame from './components/StartGame';
 
+let init = false
+
 function App() {
   const [isStarted, setIsStarted] = useState(false)
   const [isClick, setIsClick] = useState(false)
   const [example, setExample] = useState('3-1=?')
+  const [prevExample, setPrevExample] = useState('3-1=?')
   const [answer, setAnswer] = useState(null)
   const [score, setScore] = useState(0)
   const idTimeInterval = useRef()
   const idInterval = useRef()
   const startTime = useRef()
 
-  const btnStart = () => {
-    setIsStarted(true)
-    setIsClick(false)
-    console.log('игра началась');
-    setExample(generateExample()) 
-  }
-
-  const handleAnswer = num => {
-    if (num === answer && !isClick) {
-      setIsClick(true)
-      countScore()
+  useEffect(() => {
+    
+    if (init) {
       cleaning()
       setExample(example.replace('?', answer))
       document.querySelector('.header-game img').classList.add('es')
       document.querySelector('.header-game span').classList.add('right')
       setTimeout(() => {
+        setExample(example.slice(0, example.length - 1) + '?')
         document.querySelector('.header-example').classList.add('swipe')
       }, 500);
 
@@ -45,53 +41,75 @@ function App() {
         }
         document.querySelector('.header-game img').classList.remove('es')
         document.querySelector('.header-game span').classList.remove('right')
-       setTimeout(() => {
-         let newExample = generateExample()
-         console.log(newExample);
-         const cleanExample1 = newExample.slice(0, newExample.length - 2)
-         const cleanExample2 = example.slice(0, example.length - 2)
-         if (cleanExample1 === cleanExample2 || cleanExample1.split('').reverse().join('') === cleanExample2 || cleanExample1 === cleanExample2.split('').reverse().join('')) {
-           while (newExample === example) {
-             newExample = generateExample()
-           }
-           setExample(newExample)
-         } else {
-           setExample(newExample)
-         }
+        setTimeout(() => {
+          let newExample = generateExample()
+          let cleanNew = newExample.slice(0, newExample.length - 2)
+          let cleanPrev = prevExample.slice(0, example.length - 2)
+          console.log('1', cleanNew, cleanPrev, cleanNew === cleanPrev);
+          console.log('2', cleanNew.split('').reverse().join(''), cleanPrev, cleanNew.split('').reverse().join('') === cleanPrev);
+          if (cleanNew === cleanPrev || cleanNew.split('').reverse().join('') === cleanPrev) {
+            const cleanReverse = cleanNew.split('').reverse().join('')
+            while ([newExample.slice(0, newExample.length - 2), cleanReverse].indexOf(cleanPrev) !== -1) {
+              console.log('in', [newExample.slice(0, newExample.length - 2), cleanReverse].indexOf(cleanPrev));
+              newExample = generateExample()
+            }
+            setExample(newExample)
+            setPrevExample(newExample)
+          } else {
+            setExample(newExample)
+            setPrevExample(newExample)
+          }
 
-         setTimeout(() => {
-           document.querySelector('.header-example').classList.remove('swipe')
-           startTime.current = Date.now()
-           document.querySelectorAll('.answer-bar').forEach(el => {
-             el.classList.add('animate')
-           });
+          setTimeout(() => {
+            document.querySelector('.header-example').classList.remove('swipe')
+            startTime.current = Date.now()
+            document.querySelectorAll('.answer-bar').forEach(el => {
+              el.classList.add('animate')
+            });
+            const timeInterval = setInterval(() => {
+              let timePassed = Date.now() - startTime.current;
+              if (timePassed >= 3600) {
+                console.log('не успел')
+                endGame()
+              }
+            }, 100);
+            idTimeInterval.current = timeInterval
 
-           const timeInterval = setInterval(() => {
-             let timePassed = Date.now() - startTime.current;
-             if (timePassed >= 3600) {
-               console.log('не успел')
-               endGame()
-             }
-           }, 1);
-           idTimeInterval.current = timeInterval
-
-           const timerPercent = setInterval(() => {
-             const maxWidth = window.getComputedStyle(document.querySelector('.answer-block')).width
-             const numMaxWidth = parseInt(maxWidth.match(/\d+/)).toFixed()
-             const width = window.getComputedStyle(document.querySelector('.answer-bar')).width
-             const numWidth = parseInt(width.match(/\d+/))
-             const percent = ((numWidth * 100) / numMaxWidth).toFixed()
-             if (percent <= 50) {
-               document.querySelectorAll('.answer-text').forEach(el => {
-                 el.classList.add('half')
-               });
-             }
-           }, 1);
-           idInterval.current = timerPercent
-           setIsClick(false)
-         }, 300);
-       }, 300);
+            const timerPercent = setInterval(() => {
+              const maxWidth = window.getComputedStyle(document.querySelector('.answer-block')).width
+              const numMaxWidth = parseInt(maxWidth.match(/\d+/)).toFixed()
+              const width = window.getComputedStyle(document.querySelector('.answer-bar')).width
+              const numWidth = parseInt(width.match(/\d+/))
+              const percent = ((numWidth * 100) / numMaxWidth).toFixed()
+              if (percent <= 50) {
+                document.querySelectorAll('.answer-text').forEach(el => {
+                  el.classList.add('half')
+                });
+              }
+            }, 1);
+            idInterval.current = timerPercent
+            setIsClick(false)
+          }, 300);
+        }, 300);
       }, 800);
+    }
+    init = true
+    // eslint-disable-next-line
+  }, [score])
+
+  const btnStart = () => {
+    setIsStarted(true)
+    setIsClick(false)
+    console.log('игра началась');
+    let ex = generateExample()
+    setExample(ex)
+    setPrevExample(ex)
+  }
+
+  const handleAnswer = num => {
+    if (num === answer && !isClick) {
+      setIsClick(true)
+      countScore()
     } else if (num !== answer && !isClick) {
       endGame()
     }
@@ -128,6 +146,7 @@ function App() {
   } 
 
   const endGame = () => {
+    init = false
     const width = window.getComputedStyle(document.querySelector('.answer-bar')).width
     setIsClick(true)
     document.querySelector('.header-game img').classList.add('wrong')
@@ -190,7 +209,7 @@ function App() {
         // console.log(answer, num1, num2, sign)
       }
       setAnswer(answer)
-    } else if (score > 22) {
+    } else if (score > 22 && score < 55) {
       while ([1, 2, 3].indexOf(answer) === -1) {
         num1 = randomInteger(1, 3)
         num2 = randomInteger(1, 3)
@@ -326,6 +345,7 @@ function App() {
         }
       }
     }
+    setAnswer(answer)
     return text
   }
 
@@ -339,8 +359,10 @@ function App() {
     if (idTimeInterval.current) {
       clearInterval(idTimeInterval.current)
       document.querySelectorAll('.answer-bar').forEach(el => {
-        el.classList.remove('animate')
         el.style.width = width
+      });
+      document.querySelectorAll('.answer-bar').forEach(el => {
+        el.classList.remove('animate')
       });
     }
   }
